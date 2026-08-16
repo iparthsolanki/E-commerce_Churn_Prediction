@@ -3,8 +3,8 @@
 /* ==========================================================
    CONFIG
 ========================================================== */
-const API_URL = "http://127.0.0.1:8000/api/v1/predict";
-const HEALTH_URL = "http://127.0.0.1:8000/health";
+const API_URL = "https://e-commerce-churn-prediction-qpht.onrender.com/api/v1/predict";
+const HEALTH_URL = "https://e-commerce-churn-prediction-qpht.onrender.com/health";
 
 /* ==========================================================
    DOM REFERENCES
