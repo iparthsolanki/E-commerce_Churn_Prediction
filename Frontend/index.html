@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChurnAI · E-Commerce Customer Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ============================================================
+     NAVBAR
+============================================================ -->
+  <header class="navbar">
+    <div class="navbar__left">
+      <div class="brand-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+          <circle cx="12" cy="12" r="8.4" stroke="currentColor" stroke-width="1.4" />
+          <path d="M8.3 12.6l2.4 2.3L16 9.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">ChurnAI</span>
+        <span class="brand-sub">E-Commerce Intelligence</span>
+      </div>
+    </div>
+
+    <div class="navbar__right">
+      <div class="status-pill" id="apiStatusPill">
+        <span class="status-dot" id="apiStatusDot" aria-hidden="true"></span>
+        <span id="apiStatusLabel">AI MODEL — checking</span>
+      </div>
+      <div class="model-pill">XGBoost</div>
+    </div>
+  </header>
+
+  <!-- ============================================================
+     HERO
+============================================================ -->
+  <section class="hero">
+    <div class="hero__content">
+      <span class="eyebrow">AI-POWERED CUSTOMER INTELLIGENCE</span>
+      <h1 class="hero__title">Predict Customer <span class="accent-text">Churn</span> Before It Happens</h1>
+      <p class="hero__subtitle">Turn customer behavior into actionable retention intelligence with an XGBoost-powered
+        prediction system.</p>
+    </div>
+
+    <div class="hero__visual" aria-hidden="true">
+      <svg viewBox="0 0 320 220" width="100%" height="100%">
+        <defs>
+          <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#72383D" stop-opacity="0.85" />
+            <stop offset="100%" stop-color="#322D29" stop-opacity="0.35" />
+          </linearGradient>
+        </defs>
+        <circle cx="160" cy="110" r="86" fill="none" stroke="#D1C7BD" stroke-width="1" />
+        <circle cx="160" cy="110" r="60" fill="none" stroke="#D1C7BD" stroke-width="1" />
+        <polyline points="30,160 80,130 120,145 160,90 200,105 240,55 300,75" fill="none" stroke="url(#lineGrad)"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <circle cx="80" cy="130" r="3.2" fill="#72383D" />
+        <circle cx="160" cy="90" r="3.2" fill="#72383D" />
+        <circle cx="240" cy="55" r="4.2" fill="#72383D" />
+        <circle cx="300" cy="75" r="3.2" fill="#322D29" />
+      </svg>
+    </div>
+  </section>
+
+  <!-- ============================================================
+     MAIN DASHBOARD
+============================================================ -->
+  <main class="dashboard">
+
+    <!-- ---------------- LEFT: CUSTOMER FORM ---------------- -->
+    <section class="panel form-panel" aria-labelledby="formHeading">
+      <div class="panel__header">
+        <h2 id="formHeading">Customer Information</h2>
+        <p class="panel__desc">Enter the customer profile to run a churn risk assessment.</p>
+      </div>
+
+      <form id="churnForm" novalidate>
+
+        <!-- SECTION 01 -->
+        <fieldset class="form-section">
+          <legend>
+            <span class="section-num">01</span>
+            <span class="section-title">Customer Profile</span>
+          </legend>
+          <div class="form-grid">
+            <div class="field">
+              <label for="membership_category">Membership Category</label>
+              <select id="membership_category" name="membership_category" required>
+                <option value="" disabled selected>Select membership</option>
+                <option>No Membership</option>
+                <option>Basic Membership</option>
+                <option>Silver Membership</option>
+                <option>Gold Membership</option>
+                <option>Platinum Membership</option>
+                <option>Premium Membership</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="age">Age</label>
+              <input type="number" id="age" name="age" min="18" max="100" placeholder="e.g. 34" required />
+            </div>
+            <div class="field">
+              <label for="gender">Gender</label>
+              <select id="gender" name="gender" required>
+                <option value="" disabled selected>Select gender</option>
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="region_category">Region Category</label>
+              <select id="region_category" name="region_category" required>
+                <option value="" disabled selected>Select region</option>
+                <option>City</option>
+                <option>Town</option>
+                <option>Village</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="divider"></div>
+
+        <!-- SECTION 02 -->
+        <fieldset class="form-section">
+          <legend>
+            <span class="section-num">02</span>
+            <span class="section-title">Engagement &amp; Activity</span>
+          </legend>
+          <div class="form-grid">
+            <div class="field">
+              <label for="avg_time_spent">Avg. Time Spent (mins)</label>
+              <input type="number" step="0.01" id="avg_time_spent" name="avg_time_spent" min="0"
+                placeholder="e.g. 152.5" required />
+            </div>
+            <div class="field">
+              <label for="days_since_last_login">Days Since Last Login</label>
+              <input type="number" step="0.01" id="days_since_last_login" name="days_since_last_login" min="0"
+                placeholder="e.g. 3" required />
+            </div>
+            <div class="field">
+              <label for="avg_frequency_login_days">Avg. Login Frequency (days)</label>
+              <input type="number" step="0.01" id="avg_frequency_login_days" name="avg_frequency_login_days" min="0"
+                placeholder="e.g. 12" required />
+            </div>
+            <div class="field">
+              <label for="visit_hour">Visit Hour (0–23)</label>
+              <input type="number" id="visit_hour" name="visit_hour" min="0" max="23" placeholder="e.g. 19" required />
+            </div>
+            <div class="field">
+              <label for="customer_tenure_days">Customer Tenure (days)</label>
+              <input type="number" step="0.01" id="customer_tenure_days" name="customer_tenure_days" min="0"
+                placeholder="e.g. 420" required />
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="divider"></div>
+
+        <!-- SECTION 03 -->
+        <fieldset class="form-section">
+          <legend>
+            <span class="section-num">03</span>
+            <span class="section-title">Transaction &amp; Wallet</span>
+          </legend>
+          <div class="form-grid">
+            <div class="field">
+              <label for="avg_transaction_value">Avg. Transaction Value</label>
+              <input type="number" step="0.01" id="avg_transaction_value" name="avg_transaction_value" min="0"
+                placeholder="e.g. 12500.75" required />
+            </div>
+            <div class="field">
+              <label for="points_in_wallet">Points in Wallet</label>
+              <input type="number" step="0.01" id="points_in_wallet" name="points_in_wallet" min="0"
+                placeholder="e.g. 688.3" required />
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="divider"></div>
+
+        <!-- SECTION 04 -->
+        <fieldset class="form-section">
+          <legend>
+            <span class="section-num">04</span>
+            <span class="section-title">Offers &amp; Preferences</span>
+          </legend>
+          <div class="form-grid">
+            <div class="field">
+              <label for="preferred_offer_types">Preferred Offer Type</label>
+              <select id="preferred_offer_types" name="preferred_offer_types" required>
+                <option value="" disabled selected>Select preference</option>
+                <option>Gift Vouchers/Coupons</option>
+                <option>Credit/Debit Card Promotion</option>
+                <option>Without Offers</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="used_special_discount">Used Special Discount</label>
+              <select id="used_special_discount" name="used_special_discount" required>
+                <option value="" disabled selected>Select option</option>
+                <option>Yes</option>
+                <option>No</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="offer_application_preference">Offer Application Preference</label>
+              <select id="offer_application_preference" name="offer_application_preference" required>
+                <option value="" disabled selected>Select option</option>
+                <option>Yes</option>
+                <option>No</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="medium_of_operation">Medium of Operation</label>
+              <select id="medium_of_operation" name="medium_of_operation" required>
+                <option value="" disabled selected>Select medium</option>
+                <option>Desktop</option>
+                <option>Smartphone</option>
+                <option>Both</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="internet_option">Internet Option</label>
+              <select id="internet_option" name="internet_option" required>
+                <option value="" disabled selected>Select option</option>
+                <option>Wi-Fi</option>
+                <option>Mobile Data</option>
+                <option>Fiber Optic</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="divider"></div>
+
+        <!-- SECTION 05 -->
+        <fieldset class="form-section">
+          <legend>
+            <span class="section-num">05</span>
+            <span class="section-title">Customer Experience</span>
+          </legend>
+          <div class="form-grid">
+            <div class="field">
+              <label for="past_complaint">Past Complaint</label>
+              <select id="past_complaint" name="past_complaint" required>
+                <option value="" disabled selected>Select option</option>
+                <option>Yes</option>
+                <option>No</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="complaint_status">Complaint Status</label>
+              <select id="complaint_status" name="complaint_status" required>
+                <option value="" disabled selected>Select status</option>
+                <option>Not Applicable</option>
+                <option>Solved</option>
+                <option>Solved in Follow-up</option>
+                <option>Unsolved</option>
+                <option>No Information Available</option>
+              </select>
+            </div>
+            <div class="field field--wide">
+              <label for="feedback">Feedback</label>
+              <select id="feedback" name="feedback" required>
+                <option value="" disabled selected>Select feedback</option>
+                <option>Poor Customer Service</option>
+                <option>Poor Website</option>
+                <option>Poor Product Quality</option>
+                <option>Too many ads</option>
+                <option>No reason specified</option>
+                <option>Reasonable Price</option>
+                <option>Products always in Stock</option>
+                <option>User Friendly Website</option>
+                <option>Quality Customer Care</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="joined_through_referral">Joined Through Referral</label>
+              <select id="joined_through_referral" name="joined_through_referral" required>
+                <option value="" disabled selected>Select option</option>
+                <option>Yes</option>
+                <option>No</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        <div id="formAlert" class="alert alert--hidden" role="alert"></div>
+
+        <button type="submit" class="predict-btn" id="predictBtn">
+          <span class="predict-btn__label" id="predictBtnLabel">Predict Churn Risk</span>
+          <span class="predict-btn__spinner" id="predictBtnSpinner" aria-hidden="true"></span>
+        </button>
+      </form>
+    </section>
+
+    <!-- ---------------- RIGHT: RESULT PANEL ---------------- -->
+    <section class="panel result-panel" aria-labelledby="resultHeading" aria-live="polite">
+      <div class="panel__header">
+        <h2 id="resultHeading">Prediction Intelligence</h2>
+        <p class="panel__desc">Real-time output from the deployed model.</p>
+      </div>
+
+      <!-- Empty state -->
+      <div class="result-empty" id="resultEmpty">
+        <div class="result-empty__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none">
+            <circle cx="12" cy="12" r="8.4" stroke="currentColor" stroke-width="1.3" />
+            <path d="M12 8v5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+            <circle cx="12" cy="16" r="0.8" fill="currentColor" />
+          </svg>
+        </div>
+        <h3>Ready for Analysis</h3>
+        <p>Enter customer information to evaluate churn risk.</p>
+      </div>
+
+      <!-- Filled state -->
+      <div class="result-filled result-filled--hidden" id="resultFilled">
+
+        <div class="result-status" id="resultStatusCard">
+          <div class="ring-wrap">
+            <svg viewBox="0 0 140 140" width="140" height="140" class="ring-svg">
+              <circle cx="70" cy="70" r="60" class="ring-track" />
+              <circle cx="70" cy="70" r="60" class="ring-progress" id="ringProgress" />
+            </svg>
+            <div class="ring-center">
+              <span class="ring-value" id="ringValue">0%</span>
+              <span class="ring-label">Churn Prob.</span>
+            </div>
+          </div>
+
+          <div class="result-status__text">
+            <span class="result-status__badge" id="resultBadge">—</span>
+            <h3 id="resultPrediction">—</h3>
+            <p id="resultRisk" class="result-status__risk">—</p>
+          </div>
+        </div>
+
+        <!-- Probability meter -->
+        <div class="prob-meter">
+          <div class="prob-meter__labels">
+            <span>0%</span>
+            <span>100%</span>
+          </div>
+          <div class="prob-meter__track">
+            <div class="prob-meter__fill" id="probMeterFill"></div>
+            <div class="prob-meter__marker" id="probMeterMarker"></div>
+          </div>
+        </div>
+
+        <!-- Metric row -->
+        <div class="metric-row">
+          <div class="metric-box">
+            <span class="metric-box__label">Prediction</span>
+            <span class="metric-box__value" id="metricPrediction">—</span>
+          </div>
+          <div class="metric-box">
+            <span class="metric-box__label">Threshold</span>
+            <span class="metric-box__value" id="metricThreshold">0.50</span>
+          </div>
+          <div class="metric-box">
+            <span class="metric-box__label">Model</span>
+            <span class="metric-box__value">XGBoost</span>
+          </div>
+          <div class="metric-box">
+            <span class="metric-box__label">API Status</span>
+            <span class="metric-box__value metric-box__value--success" id="metricApiStatus">—</span>
+          </div>
+        </div>
+
+        <!-- Business recommendation -->
+        <div class="recommendation" id="recommendationBox">
+          <span class="recommendation__eyebrow">Business Recommendation</span>
+          <p id="recommendationText">—</p>
+        </div>
+      </div>
+
+      <!-- Model information card -->
+      <div class="model-info">
+        <span class="model-info__eyebrow">Model Information</span>
+        <div class="model-info__grid">
+          <div><span>Model</span><strong>XGBoost</strong></div>
+          <div><span>Threshold</span><strong>0.50</strong></div>
+          <div><span>API</span><strong>FastAPI</strong></div>
+          <div><span>Version</span><strong>v1.0.0</strong></div>
+          <div><span>Status</span><strong id="modelInfoStatus">Online</strong></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================
+     MODEL PERFORMANCE
+============================================================ -->
+  <section class="analytics">
+    <div class="analytics__header">
+      <h2>Model Performance</h2>
+      <p>Model Evaluation Metrics — measured on the held-out test set, not derived from the current prediction.</p>
+    </div>
+    <div class="analytics__grid">
+      <div class="metric-card">
+        <span class="metric-card__label">Accuracy</span>
+        <span class="metric-card__value">93.47%</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-card__label">Precision</span>
+        <span class="metric-card__value">94.38%</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-card__label">Recall</span>
+        <span class="metric-card__value">93.50%</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-card__label">F1 Score</span>
+        <span class="metric-card__value">93.94%</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-card__label">ROC-AUC</span>
+        <span class="metric-card__value">97.55%</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+     FOOTER
+============================================================ -->
+  <footer class="footer">
+    <p>ChurnAI • E-Commerce Customer Intelligence</p>
+    <p class="footer__muted">Powered by XGBoost + FastAPI</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
